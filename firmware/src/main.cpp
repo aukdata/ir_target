@@ -28,7 +28,6 @@ int main()
     auto port_c4 = port_c.get_writable_pin<4>();
     auto port_c5 = port_c.get_writable_pin<5>();
     auto port_c6 = port_c.get_writable_pin<6>();
-    auto port_c7 = port_c.get_writable_pin<7>();
 
     gb7::port_writable<gb7::port_type::PortD> port_d;
     auto port_d0 = port_d.get_writable_pin<0>();
