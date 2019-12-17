@@ -6,7 +6,10 @@
 
 #include <avr/io.h>
 
+#define GB7_TIMER_USE_EVOKE
+
 #include "port.hpp"
+#include "timer.hpp"
 
 int main()
 {
@@ -39,10 +42,14 @@ int main()
     auto port_d6 = port_d.get_writable_pin<6>();
     auto port_d7 = port_d.get_writable_pin<7>();
 
-    for (;;)
-    {
-        
-    }
+    gb7::timer::timer0::init();
+    using namespace gb7::timer::literals;
+    gb7::timer::timer0::evoke_every<1137_us>(+[](void* data) {
+        decltype(port_b1) speaker;
 
+        speaker = !speaker;
+    }, nullptr);
+
+    for (;;);
     return 0;   /* never reached */
 }
