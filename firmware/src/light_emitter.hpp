@@ -29,7 +29,13 @@ namespace gb7
             gb7::timer::multitimer::cancel_invocation(timer_id);
         }
 
-        void set_sended_data(uint8_t data)
+        void stop() noexcept
+        {
+            gb7::timer::multitimer::cancel_invocation(timer_id);
+            timer_id = 0;
+        }
+
+        void start(uint8_t data)
         {
             const uint16_t packet = 0b1010101010101010 |
                 ((data & (1 << 0)) << 0) |
