@@ -5,11 +5,13 @@
  */
 
 #include <avr/io.h>
+#include <util/delay.h>
 
-#define GB7_TIMER_USE_EVOKE
+#define GB7_TIMER_USE_INVOKE
 
 #include "port.hpp"
-#include "timer.hpp"
+#include "target.hpp"
+#include "random.hpp"
 
 int main()
 {
@@ -42,13 +44,30 @@ int main()
     auto port_d6 = port_d.get_writable_pin<6>();
     auto port_d7 = port_d.get_writable_pin<7>();
 
-    gb7::timer::timer0::init();
-    using namespace gb7::timer::literals;
-    gb7::timer::timer0::evoke_every<1137_us>(+[](void* data) {
-        decltype(port_b1) speaker;
+    auto target1 = gb7::target<decltype(port_d0), decltype(port_d1), decltype(port_d2)> {};
+    auto target3 = gb7::target<decltype(port_c5), decltype(port_c4), decltype(port_c3)> {};
+    auto target4 = gb7::target<decltype(port_c2), decltype(port_c1), decltype(port_c0)> {};
+    auto target5 = gb7::target<decltype(port_b1), decltype(port_b0), decltype(port_d7)> {};
 
-        speaker = !speaker;
-    }, nullptr);
+    gb7::target_interface* targets[4] = {
+        &target1, &target3, &target4, &target5
+    };
+    gb7::random rand {};
+
+    int target_id = -1;
+    for (int i = 0;; i++)
+    {
+        target_id = rand(4);
+        targets[target_id]->activate(rand(256));
+        
+        do
+        {
+            _delay_ms(10);
+        } while (targets[target_id]->update());
+        target_id = -1;
+
+        delay_ms(rand(2000));
+    }
 
     for (;;);
     return 0;   /* never reached */
